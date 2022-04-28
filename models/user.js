@@ -1,29 +1,31 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
+    event: {
+        type: String,
+        required: true
+    },
     firstname: {
         type: String,
-        required: true,
-        min: 6,
-        max: 255
+        required: true
     },
     lastname: {
         type: String,
-        required: true,
-        min: 6,
-        max: 225
+        required: true
+    },
+    work_location: {
+        type: String,
+    },
+    hobbies: {
+        type: String,
     },
     email: {
         type: String,
-        required: true,
-        min: 6,
-        max: 225
+        required: true
     },
     password: {
         type: String,
-        required: true,
-        min: 6,
-        max: 255
+        required: true
     }
 });
 

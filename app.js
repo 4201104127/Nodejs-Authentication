@@ -16,7 +16,10 @@ dotenv.config();
 
 mongoose.connect(process.env.DB_CONNECT,
   { useUnifiedTopology: true, useNewUrlParser: true },
-  () => console.log('DB Connected')
+  (err) => {
+    if (err) console.log(err);
+    else console.log('DB Connected at PORT ' + process.env.PORT);
+  } 
 );
 
 // view engine setup

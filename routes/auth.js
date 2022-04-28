@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const User = require('./../models/user');
-const { registerValidator } = require('./../validations/auth');
+const registerValidator = require('./../validations/auth');
 
-router.post('/register', async (request, response) => {
-    const { error } = registerValidator(request.body);
+router.post('/registerA', async (request, response) => {
+    const { error } = registerValidator.registerValidatorA(request.body);
 
     if (error) return response.status(422).send(error.details[0].message);
 
@@ -18,7 +18,39 @@ router.post('/register', async (request, response) => {
     const hashPassword = await bcrypt.hash(request.body.password, salt);
 
     const user = new User({
-        name: request.body.name,
+        type: 'A',
+        firstname: request.body.firstname,
+        lastname: request.body.lastname,
+        work_location: request.body.work_location,
+        email: request.body.email,
+        password: hashPassword,
+    });
+
+    try {
+        const newUser = await user.save();
+        await response.send(newUser);
+    } catch (err) {
+        response.status(400).send(err);
+    }
+});
+
+router.post('/registerB', async (request, response) => {
+    const { error } = registerValidator.registerValidatorB(request.body);
+
+    if (error) return response.status(422).send(error.details[0].message);
+
+    const checkEmailExist = await User.findOne({ email: request.body.email });
+
+    if (checkEmailExist) return response.status(422).send('Email is exist');
+
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(request.body.password, salt);
+
+    const user = new User({
+        type: 'B',
+        firstname: request.body.firstname,
+        lastname: request.body.lastname,
+        hobbies: request.body.work_location,
         email: request.body.email,
         password: hashPassword,
     });
