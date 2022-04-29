@@ -18,7 +18,7 @@ router.post('/registerA', async (request, response) => {
     const hashPassword = await bcrypt.hash(request.body.password, salt);
 
     const user = new User({
-        type: 'A',
+        event: 'A',
         firstname: request.body.firstname,
         lastname: request.body.lastname,
         work_location: request.body.work_location,
@@ -47,10 +47,10 @@ router.post('/registerB', async (request, response) => {
     const hashPassword = await bcrypt.hash(request.body.password, salt);
 
     const user = new User({
-        type: 'B',
+        event: 'B',
         firstname: request.body.firstname,
         lastname: request.body.lastname,
-        hobbies: request.body.work_location,
+        hobbies: request.body.hobbies,
         email: request.body.email,
         password: hashPassword,
     });
