@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const User = require('./../models/user');
+const Event = require('./../models/event');
 const registerValidator = require('./../validations/auth');
 
 router.post('/registerA', async (request, response) => {
@@ -12,25 +13,48 @@ router.post('/registerA', async (request, response) => {
 
     const checkEmailExist = await User.findOne({ email: request.body.email });
 
-    if (checkEmailExist) return response.status(422).send('Email is exist');
+    if (checkEmailExist) {
+        const checkDub = await Event.findOne({ email: request.body.email, work_location: request.body.work_location });
+        if (checkDub) return response.status(422).send('Existed');
+        else {
+            const event = new Event({
+                event: 'A',
+                email: request.body.email,
+                work_location: request.body.work_location,
+            })
+            try {
+                await event.save();
+                await response.send('Updated');
+            } catch (err) {
+                response.status(400).send(err);
+            }
+        }
+    }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(request.body.password, salt);
+    else {
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(request.body.password, salt);
 
-    const user = new User({
-        event: 'A',
-        firstname: request.body.firstname,
-        lastname: request.body.lastname,
-        work_location: request.body.work_location,
-        email: request.body.email,
-        password: hashPassword,
-    });
+        const user = new User({
+            firstname: request.body.firstname,
+            lastname: request.body.lastname,
+            email: request.body.email,
+            password: hashPassword,
+        });
 
-    try {
-        const newUser = await user.save();
-        await response.send(newUser);
-    } catch (err) {
-        response.status(400).send(err);
+        const event = new Event({
+            event: 'A',
+            email: request.body.email,
+            work_location: request.body.work_location,
+        })
+
+        try {
+            const newUser = await user.save();
+            await event.save();
+            await response.send(newUser);
+        } catch (err) {
+            response.status(400).send(err);
+        }
     }
 });
 
@@ -41,37 +65,60 @@ router.post('/registerB', async (request, response) => {
 
     const checkEmailExist = await User.findOne({ email: request.body.email });
 
-    if (checkEmailExist) return response.status(422).send('Email is exist');
+    if (checkEmailExist) {
+        const checkDub = await Event.findOne({ email: request.body.email, hobbies: request.body.hobbies });
+        if (checkDub) return response.status(422).send('Existed');
+        else {
+            const event = new Event({
+                event: 'B',
+                email: request.body.email,
+                hobbies: request.body.hobbies,
+            })
+            try {
+                await event.save();
+                await response.send('Updated');
+            } catch (err) {
+                response.status(400).send(err);
+            }
+        }
+    }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(request.body.password, salt);
+    else {
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(request.body.password, salt);
 
-    const user = new User({
-        event: 'B',
-        firstname: request.body.firstname,
-        lastname: request.body.lastname,
-        hobbies: request.body.hobbies,
-        email: request.body.email,
-        password: hashPassword,
-    });
+        const user = new User({
+            firstname: request.body.firstname,
+            lastname: request.body.lastname,
+            email: request.body.email,
+            password: hashPassword,
+        });
 
-    try {
-        const newUser = await user.save();
-        await response.send(newUser);
-    } catch (err) {
-        response.status(400).send(err);
+        const event = new Event({
+            event: 'B',
+            email: request.body.email,
+            hobbies: request.body.hobbies,
+        })
+
+        try {
+            const newUser = await user.save();
+            await event.save();
+            await response.send(newUser);
+        } catch (err) {
+            response.status(400).send(err);
+        }
     }
 });
 
 router.post('/login', async (request, response) => {
-    const user = await User.findOne({email: request.body.email});
+    const user = await User.findOne({ email: request.body.email });
     if (!user) return response.status(422).send('Email or Password is not correct');
 
     const checkPassword = await bcrypt.compare(request.body.password, user.password);
 
     if (!checkPassword) return response.status(422).send('Email or Password is not correct');
-    
-    const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET, { expiresIn: 60 * 60 * 24 });
+    const TOKEN_SECRET = "random";
+    const token = jwt.sign({ _id: user._id }, TOKEN_SECRET, { expiresIn: 60 * 60 * 24 });
     response.header('auth-token', token).send(token);
 })
 

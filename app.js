@@ -10,15 +10,17 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 
+DB_CONNECT='mongodb+srv://testgl:testgl@testgl.92aag.mongodb.net/testGL?retryWrites=true&w=majority'
+
 const app = express();
 
 dotenv.config();
 
-mongoose.connect(process.env.DB_CONNECT,
+mongoose.connect(process.env.MONGODB_URI || DB_CONNECT,
   { useUnifiedTopology: true, useNewUrlParser: true },
   (err) => {
     if (err) console.log(err);
-    else console.log('DB Connected at PORT ' + process.env.PORT);
+    else console.log('DB Connected');
   } 
 );
 

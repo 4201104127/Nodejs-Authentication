@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-    firstname: {
-        type: String,
-        required: true
-    },
-    lastname: {
+const eventSchema = new mongoose.Schema({
+    event: {
         type: String,
         required: true
     },
@@ -13,10 +9,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    password: {
+    work_location: {
         type: String,
-        required: true
+    },
+    hobbies: {
+        type: String,
     }
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Event', eventSchema);
